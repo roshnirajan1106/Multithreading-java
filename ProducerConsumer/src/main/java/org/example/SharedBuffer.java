@@ -10,6 +10,8 @@ public class SharedBuffer{
     public Queue<Integer> queue = new LinkedList<>();
     Lock lock = new ReentrantLock();
     private int capacity;
+    //meaning of notFull condition - notFull.await means wait till the queue is not full
+    //meaning of notEmpty condition - notEmpty.await means wait till the queue is not empty
     private Condition notFull = lock.newCondition();
     private Condition notEmpty = lock.newCondition();
 
@@ -22,7 +24,7 @@ public class SharedBuffer{
         try{
             while(queue.size() >= capacity){
                 System.out.println("The queue is full please wait!");
-                notEmpty.await();
+                notFull.await();
             }
             System.out.println("Produced by : " + Thread.currentThread().getName() + " : " + random);
             queue.add(random);

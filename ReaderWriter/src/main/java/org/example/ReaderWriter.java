@@ -8,17 +8,19 @@ public class ReaderWriter {
     int sharedValue = 0;
     int readerCount =0;
     int newValue = 0;
+    int writerCount = 0;
     boolean isWriting = false;
     Lock lock = new ReentrantLock(true);
     Condition condition = lock.newCondition();
 
     public void read() {
         lock.lock();
-        readerCount ++;
+
         try{
-            while(isWriting){
+            while(isWriting && writerCount >0){
                 condition.await();
             }
+            readerCount ++;
         }catch (InterruptedException e) {
             throw new RuntimeException(e);
         }finally {
@@ -36,7 +38,8 @@ public class ReaderWriter {
     public void write(int value){
         lock.lock();
         try{
-            while(isWriting || readerCount >0){
+            writerCount ++;
+            while(isWriting ){
                 condition.await();
             }
             isWriting = true;
@@ -49,6 +52,7 @@ public class ReaderWriter {
         sharedValue = value;
         lock.lock();
         isWriting = false;
+        writerCount--;
         condition.signalAll();
         lock.unlock();
     }
