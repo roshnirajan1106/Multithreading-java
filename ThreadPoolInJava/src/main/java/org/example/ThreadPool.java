@@ -33,9 +33,9 @@ public class ThreadPool {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            for(PoolThread p : numberOfRunningThreads){
-                p.doStop();
-            }
+        }
+        for(PoolThread p : numberOfRunningThreads){
+            p.doStop();
         }
 
     }
