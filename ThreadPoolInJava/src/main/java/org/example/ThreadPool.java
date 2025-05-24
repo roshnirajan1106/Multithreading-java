@@ -9,7 +9,6 @@ public class ThreadPool {
     private int capacity;
     private BlockingQueue<Runnable> queue;
     List<PoolThread> numberOfRunningThreads = null;
-    private volatile boolean isStop = false;
     private int maxTasks;
     public ThreadPool(int capacity, int maxTasks) {
         this.capacity = capacity;
@@ -17,7 +16,7 @@ public class ThreadPool {
         queue = new ArrayBlockingQueue<>(maxTasks);
         numberOfRunningThreads = new ArrayList<>(capacity);
         for(int i = 0; i < capacity; i++) {
-            numberOfRunningThreads.add(new PoolThread(queue,isStop));
+            numberOfRunningThreads.add(new PoolThread(queue));
         }
         for(int i = 0; i < capacity; i++) {
             new Thread(numberOfRunningThreads.get(i)).start();
@@ -28,14 +27,17 @@ public class ThreadPool {
     }
 
     public void stop() {
-        while(queue.size() > 0) {
+        while(!queue.isEmpty()) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        isStop = true;
+            for(PoolThread p : numberOfRunningThreads){
+                p.doStop();
+            }
         }
 
     }
+
 }

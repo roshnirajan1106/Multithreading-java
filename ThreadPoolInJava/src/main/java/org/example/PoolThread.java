@@ -5,22 +5,27 @@ import java.util.concurrent.BlockingQueue;
 public class PoolThread implements Runnable{
 
     boolean isStop = false;
+    Thread thread = null;
     BlockingQueue<Runnable> bq = null;
-    PoolThread(BlockingQueue<Runnable> blockingQueue, boolean isStop){
+    PoolThread(BlockingQueue<Runnable> blockingQueue){
         bq = blockingQueue;
-        this.isStop = isStop;
+
     }
     @Override
     public void run() {
-        try {
-            while (isStop == false) {
-                Runnable runnable = bq.take();
-                System.out.println("Thread " + Thread.currentThread().getId() + " is executing task " + runnable.toString());
-                runnable.run();
+        thread = Thread.currentThread();
+            while (!isStop) {
+                try {
+                    Runnable runnable = bq.take(); //blocking operation. will be stuck here until queue is not empty.
+                    System.out.println("Thread " + Thread.currentThread().getId() + " is executing task " + runnable.toString());
+                    runnable.run();
+                } catch (InterruptedException e) {
+                    System.out.println("Thread is interrupted");
+                }
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+    }
+    public void doStop(){
+        isStop = true;
+        this.thread.interrupt();
     }
 }
