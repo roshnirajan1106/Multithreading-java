@@ -1,0 +1,79 @@
+A web crawler is a program that systematically browses the web to extract information from websites. It starts with a seed URL, downloads the page content, extracts links from that page, and then follows those links to discover and process more pages. It's commonly used for search engine indexing, data mining, web scraping, and site monitoring.
+
+Core Steps for Implementation
+1. URL Management
+
+Maintain a queue of URLs to visit (frontier)
+Keep track of visited URLs to avoid duplicates
+Handle URL normalization and validation
+
+2. HTTP Request Handling
+Send GET requests to fetch web pages
+Handle HTTP responses, redirects, and error codes
+Respect rate limiting and politeness policies
+
+3. Content Processing
+
+Parse HTML content to extract data
+Extract links from pages for further crawling
+Filter and validate extracted URLs
+
+4. Concurrency with ExecutorService
+
+Use thread pools to crawl multiple pages simultaneously
+Manage thread-safe data structures for URL queues
+Control crawling rate to avoid overwhelming servers
+5. Storage and Output
+
+Store extracted data (database, files, etc.)
+Log crawling progress and errors
+
+Key Dependencies You'll Need
+Essential Libraries:
+
+<!-- HTTP Client -->
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.5.14</version>
+</dependency>
+
+<!-- HTML Parsing -->
+<dependency>
+    <groupId>org.jsoup</groupId>
+    <artifactId>jsoup</artifactId>
+    <version>1.16.1</version>
+</dependency>
+
+<!-- URL handling -->
+<dependency>
+    <groupId>commons-validator</groupId>
+    <artifactId>commons-validator</artifactId>
+    <version>1.7</version>
+</dependency>
+---
+
+Built-in Java Components:
+
+ExecutorService and ThreadPoolExecutor for concurrency
+ConcurrentHashMap and BlockingQueue for thread-safe collections
+URL and URI classes for URL handling
+
+Optional but Helpful:
+
+Logging framework (SLF4J + Logback)
+JSON processing library if working with APIs
+Database driver if persisting data
+
+
+Architecture Overview
+Your main components will be:
+
+CrawlerEngine: Orchestrates the crawling process
+URLFrontier: Manages the queue of URLs to visit
+WebPageFetcher: Handles HTTP requests using ExecutorService
+ContentProcessor: Parses HTML and extracts links/data
+RobotsTxtChecker: Respects robots.txt rules
+RateLimiter: Controls request frequency per domain
+
+The ExecutorService will manage a pool of worker threads that continuously fetch URLs from the frontier, process the content, and add newly discovered URLs back to the queue.
