@@ -30,6 +30,7 @@ public class CrawlerTask implements Runnable {
                 String url = bq.poll();
                 if (url == null) {
                     workerLogger.info("No new tasks yet");
+                    Thread.sleep(500);
                     continue;
                 }
                 if (urlVisited.containsKey(url)) {
@@ -39,6 +40,7 @@ public class CrawlerTask implements Runnable {
                 workerLogger.info("Crawling the URL :{}" ,url);
                 crawl(url);
                 urlVisited.put(url,true);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 workerLogger.info("Thread is interrupted! " + e.getMessage());
                 break;
@@ -57,11 +59,11 @@ public class CrawlerTask implements Runnable {
             if(!isValidUrl(absoluteUrl) || urlVisited.containsKey(absoluteUrl) || bq.contains(absoluteUrl)) {
                 continue;
             }
-            if(numberOfThreadAdded > 2){
+            if(bq.size() > 20 ){
                 break;
             }
             numberOfThreadAdded++;
-            bq.put(absoluteUrl);
+            bq.add(absoluteUrl);
             workerLogger.info("Url added to queue :{}", absoluteUrl);
         }
 
